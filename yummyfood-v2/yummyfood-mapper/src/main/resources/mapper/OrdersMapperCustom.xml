@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.njupt.swg.mapper.OrdersMapperCustom">
+
+    <select id="getMyOrderStatusCounts" parameterType="Map" resultType="int">
+        select count(1) from orders o
+        left join order_status os
+        on o.id = os.order_id
+        where o.user_id = #{paramsMap.userId}
+        and o.is_delete = 0
+        and os.order_status = ${paramsMap.orderStatus}
+        <if test="paramsMap.isComment != null">
+            and o.is_comment = #{paramsMap.isComment}
+        </if>
+    </select>
+
+    <select id="getMyOrderTrend" parameterType="Map" resultType="com.njupt.swg.pojo.OrderStatus">
+       select os.order_id as orderId,
+            os.order_status as orderStatus,
+            os.created_time as createdTime,
+            os.pay_time as payTime,
+            os.deliver_time as deliverTime,
+            os.success_time as successTime,
+            os.close_time as closeTime,
+            os.comment_time as commentTime
+        FROM
+          orders o
+        LEFT JOIN
+          order_status os
+        on
+          o.id = os.order_id
+        WHERE
+          o.is_delete = 0
+        AND
+          o.user_id = #{paramsMap.userId}
+        AND
+          os.order_status in (20, 30, 40)
+        ORDER BY
+          os.order_id
+        DESC
+    </select>
+
+    <resultMap id="myOrdersVO" type="com.njupt.swg.vo.MyOrdersVO">
+        <id column="orderId" property="orderId" />
+        <result column="createdTime" property="createdTime" />
+        <result column="payMethod" property="payMethod" />
+        <result column="realPayAmount" property="realPayAmount" />
+        <result column="postAmount" property="postAmount" />
+        <result column="orderStatus" property="orderStatus" />
+        <result column="isComment" property="isComment" />
+    </resultMap>
+
+    <select id="queryMyOrders" parameterType="map" resultMap="myOrdersVO">
+        SELECT
+        od.id as orderId,
+        od.created_time as createdTime,
+        od.pay_method as payMethod,
+        od.real_pay_amount as realPayAmount,
+        od.post_amount as postAmount,
+        od.is_comment as isComment,
+        os.order_status as orderStatus
+        FROM
+        orders od
+        LEFT JOIN
+        order_status os
+        on od.id = os.order_id
+        WHERE
+        od.is_delete = 0
+        AND
+        od.user_id = #{userId}
+        <if test="orderStatus != null">
+            and os.order_status = #{orderStatus}
+        </if>
+        ORDER BY od.updated_time desc
+    </select>
+
+</mapper>
