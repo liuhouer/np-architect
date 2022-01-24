@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>user-list</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+    <table border="1" style="margin: 0 auto;width: 300px">
+        <thead>
+            <tr>
+                <th>用户id</th>
+                <th>用户名</th>
+                <th>性别</th>
+                <th>年龄</th>
+                <th>更新次数</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.sex}"></td>
+                <td th:text="${user.age}"></td>
+                <td th:text="${user.updateCount}"></td>
+                <td>
+                    <button type="button" name="del" th:attr="userId=${user.id}">删除</button>
+                    <button type="button" name="update" th:attr="userId=${user.id}">修改</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <script>
+        $(function () {
+            $(document).on("click","button[name=del]",function () {
+                var userId = $(this).attr("userId");
+                $.get("/user/delUser?userId="+userId,function (reps) {
+                    if (reps.status == 1){
+                        setTimeout(function () {
+                            location.reload();
+                        },5000);
+                    }
+                });
+            });
+
+            $(document).on("click","button[name=update]",function () {
+                var userId = $(this).attr("userId");
+                location.href = "/user/userDetail?userId="+userId;
+            });
+        });
+
+    </script>
+</body>
+</html>

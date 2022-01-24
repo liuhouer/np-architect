@@ -1,0 +1,39 @@
+server:
+  port: 10006
+
+spring:
+  application:
+    name: foodie-auth-service
+  redis:
+    database: 0
+    host: r-uf6jixwat2fksjiuwdpd.redis.rds.aliyuncs.com
+    port: 6379
+    password: Im00cIm00c
+#  zipkin:
+#    discoveryClientEnabled: true
+#    base-url: http://ZIPKIN-SERVER/
+#    locator:
+#      discovery:
+#        enabled: true
+  sleuth:
+    sampler:
+      probability: 1
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://myregistry-svc:20000/eureka/
+  instance:
+    instance-id: ${spring.cloud.client.ip-address}.${server.port}
+    prefer-ip-address: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  security:
+    enabled: false

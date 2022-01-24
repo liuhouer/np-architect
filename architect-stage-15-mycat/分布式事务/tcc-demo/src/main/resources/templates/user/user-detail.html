@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>user-detail</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body style="text-align: left">
+    <form style="margin: 0 auto 0 300px" method="post" action="/user/updateUser">
+        <input type="hidden" name="id" th:attr="value=${user.id}" >
+        <input type="hidden" name="token" th:attr="value=${token}" >
+        <input type="hidden" name="version" th:attr="value=${user.version}">
+        用户名：<input type="text" name="username" th:attr="value=${user.username}"> <br>
+        性别：
+        <select name="sex">
+            <option value="0" th:attr="selected=${user.sex == 0}">未填</option>
+            <option value="1" th:attr="selected=${user.sex == 1}">男</option>
+            <option value="2" th:attr="selected=${user.sex == 2}">女</option>
+        </select>
+        <br>
+        年龄：<input type="number" name="age" th:attr="value=${user.age}"><br>
+
+        更新次数：<span th:text="${user.updateCount}"></span> <br>
+
+        <button type="submit">提交</button>
+    </form>
+</body>
+</html>

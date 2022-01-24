@@ -1,0 +1,12 @@
+############################################################
+#
+# Eureka注册中心
+#
+############################################################
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://myregistry-svc:20000/eureka/
+  instance:
+    instance-id: ${spring.cloud.client.ip-address}.${server.port}
+    prefer-ip-address: true

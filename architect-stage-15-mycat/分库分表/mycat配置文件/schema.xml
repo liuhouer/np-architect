@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+	<schema name="foodie-shop-dev" checkSQLschema="false" sqlMaxLimit="100" dataNode="dn131">
+		<!-- auto sharding by id (long) 
+		<table name="user" dataNode="dn131,dn132" rule="mod-long" />
+		<table name="province" dataNode="dn131,dn132" type="global"/>
+		<table name="o_order" autoIncrement="true" primaryKey="id"  dataNode="dn131,dn132" rule="mod-long">
+			<childTable name="order_item" joinKey="order_id" parentKey="id"/>
+		</table>
+		-->
+
+		<!-- <table name="oc_call" primaryKey="ID" dataNode="dn1$0-743" rule="latest-month-calldate"
+			/> -->
+		<table name="orders" dataNode="dn131,dn132" rule="sharding-by-murmur">
+			<childTable name="order_items" joinKey="order_id" parentKey="id"/>
+			<childTable name="order_status" joinKey="order_id" parentKey="id" />
+		</table>
+	</schema>
+	<dataNode name="dn131" dataHost="db131" database="foodie-shop-dev" />
+	<dataNode name="dn132" dataHost="db132" database="foodie-shop-dev" />
+	<dataHost name="db131" maxCon="1000" minCon="10" balance="0"
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+		<heartbeat>select user()</heartbeat>
+		<writeHost host="M1" url="192.168.73.131:3306" user="imooc"
+				   password="Imooc@123456">
+		</writeHost>
+	</dataHost>
+	<dataHost name="db132" maxCon="1000" minCon="10" balance="0"
+                          writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">
+                <heartbeat>select user()</heartbeat>
+                <writeHost host="M1" url="192.168.73.132:3306" user="imooc"
+                                   password="Imooc@123456">
+                </writeHost>
+        </dataHost>
+</mycat:schema>

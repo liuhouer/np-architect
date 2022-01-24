@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>foodie</artifactId>
+		<groupId>com.imooc</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>foodie-search</artifactId>
+
+	<properties>
+		<maven.test.skip>true</maven.test.skip>
+	</properties>
+
+	<dependencies>
+		<!--<dependency>-->
+			<!--<groupId>org.elasticsearch</groupId>-->
+			<!--<artifactId>elasticsearch</artifactId>-->
+			<!--<version>7.4.2</version>-->
+		<!--</dependency>-->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+			<!--<version>2.1.5.RELEASE</version>-->
+			<version>2.2.2.RELEASE</version>
+		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.data</groupId>-->
+			<!--<artifactId>spring-data-elasticsearch</artifactId>-->
+			<!--<version>3.2.3.RELEASE</version>-->
+		<!--</dependency>-->
+
+		<!--<dependency>-->
+			<!--<groupId>io.netty</groupId>-->
+			<!--<artifactId>netty-transport</artifactId>-->
+			<!--<version>4.1.43.Final</version>-->
+		<!--</dependency>-->
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.imooc</groupId>
+			<artifactId>foodie-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.11.1</version>
+		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>org.elasticsearch.client</groupId>-->
+			<!--<artifactId>elasticsearch-rest-client</artifactId>-->
+			<!--<version>7.4.2</version>-->
+		<!--</dependency>-->
+
+		<!--<dependency>-->
+			<!--<groupId>org.elasticsearch.client</groupId>-->
+			<!--<artifactId>elasticsearch-rest-high-level-client</artifactId>-->
+			<!--<version>7.4.2</version>-->
+		<!--</dependency>-->
+
+	</dependencies>
+
+</project>

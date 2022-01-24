@@ -1,0 +1,66 @@
+############################################################
+#
+# web访问端口号  约定：8066
+#
+############################################################
+server:
+  port: 8066
+  tomcat:
+    uri-encoding: UTF-8
+
+############################################################
+#
+# 配置数据源信息
+#
+############################################################
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource              # 数据源 HikariCP
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动
+    url: jdbc:mysql://localhost:3306/foodie-shop-dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: root
+    password: root
+  redis:
+    database: 0
+    host: 192.168.1.190
+    port: 6379
+    password: imooc
+
+############################################################
+#
+# mybatis 配置
+#
+############################################################
+mybatis:
+  #config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
+  type-aliases-package: com.imooc.pojo                     # 所有POJO类所在包路径
+  mapper-locations: classpath:mapper/*.xml                  # mapper映射文件
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+############################################################
+#
+# mybatis mapper 配置
+#
+############################################################
+# 通用 Mapper 配置
+mapper:
+  mappers: com.imooc.my.mapper.MyMapper
+  not-empty: false
+  identity: MYSQL
+# 分页插件配置
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+  params: count=countSql
+
+
+############################################################
+#
+# fdfs 配置
+#
+############################################################
+fdfs:
+  connect-timeout: 30   # 连接的超时时间
+  so-timeout: 30        # 读取的超时时间
+  tracker-list: 192.168.1.155:22122   # tracker服务所在的ip地址和端口号

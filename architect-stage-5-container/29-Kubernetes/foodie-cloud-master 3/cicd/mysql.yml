@@ -1,0 +1,3 @@
+mysql:
+  ip: rm-uf68bz4sze09157vcdo.mysql.rds.aliyuncs.com
+  port: 3306

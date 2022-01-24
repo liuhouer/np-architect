@@ -1,0 +1,3 @@
+redis:
+  ip: r-uf6jixwat2fksjiuwdpd.redis.rds.aliyuncs.com
+  port: 6379

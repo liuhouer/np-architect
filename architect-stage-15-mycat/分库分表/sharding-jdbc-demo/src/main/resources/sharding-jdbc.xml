@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
+       xmlns:master-slave="http://shardingsphere.apache.org/schema/shardingsphere/masterslave"
+       xmlns:bean="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding
+                        http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave
+                        http://shardingsphere.apache.org/schema/shardingsphere/masterslave/master-slave.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+    <bean id="ds0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <property name="username" value="imooc" />
+        <property name="password" value="Imooc@123456" />
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.73.131/sharding_order?serverTimezone=Asia/Shanghai&amp;useSSL=false"/>
+    </bean>
+    <bean id="slave0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <property name="username" value="imooc" />
+        <property name="password" value="Imooc@123456" />
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.73.130/sharding_order?serverTimezone=Asia/Shanghai&amp;useSSL=false"/>
+    </bean>
+    <bean id="ms1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <property name="username" value="imooc" />
+        <property name="password" value="Imooc@123456" />
+        <property name="jdbcUrl" value="jdbc:mysql://192.168.73.132/shard_order?serverTimezone=Asia/Shanghai&amp;useSSL=false"/>
+    </bean>
+
+    <master-slave:load-balance-algorithm id="msStrategy" type="RANDOM"/>
+
+    <sharding:data-source id="sharding-data-source">
+        <sharding:sharding-rule data-source-names="ds0,slave0,ms1">
+            <sharding:master-slave-rules>
+                <sharding:master-slave-rule id="ms0" master-data-source-name="ds0" slave-data-source-names="slave0"
+                    strategy-ref="msStrategy"
+                />
+            </sharding:master-slave-rules>
+            <sharding:table-rules>
+                <sharding:table-rule logic-table="t_order" actual-data-nodes="ms$->{0..1}.t_order_$->{1..2}"
+                    database-strategy-ref="databaseStrategy" table-strategy-ref="standard"
+                                     key-generator-ref="snowflake"
+                />
+            </sharding:table-rules>
+            <sharding:broadcast-table-rules>
+                <sharding:broadcast-table-rule table="area"/>
+            </sharding:broadcast-table-rules>
+            <!--<sharding:binding-table-rules>-->
+                <!--<sharding:binding-table-rule logic-tables="t_order,t_order_item" />-->
+            <!--</sharding:binding-table-rules>-->
+        </sharding:sharding-rule>
+    </sharding:data-source>
+
+    <sharding:key-generator id="snowflake" column="order_id" type="SNOWFLAKE" props-ref="snow"/>
+    
+    <bean:properties id="snow">
+        <prop key="worker.id">678</prop>
+        <prop key="max.tolerate.time.difference.milliseconds">10</prop>
+    </bean:properties>
+
+    <sharding:inline-strategy id="databaseStrategy" sharding-column="user_id"
+                              algorithm-expression="ms$->{user_id % 2}" />
+
+    <bean id="myShard" class="com.example.shardingjdbcdemo.sharding.MySharding"/>
+
+    <sharding:standard-strategy id="standard" sharding-column="order_id" precise-algorithm-ref="myShard"/>
+
+    <sharding:inline-strategy id="tableStrategy" sharding-column="order_id"
+                              algorithm-expression="t_order_$->{order_id % 2 +1}" />
+
+
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="sharding-data-source"/>
+        <property name="mapperLocations" value="classpath*:/mybatis/*.xml"/>
+    </bean>
+
+</beans>

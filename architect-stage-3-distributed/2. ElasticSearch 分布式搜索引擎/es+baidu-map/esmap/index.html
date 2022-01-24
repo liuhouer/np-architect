@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=0">
+
+	<style type="text/css">
+		body {width: 100%;height: 100%;margin:0;font-family:"微软雅黑";} 
+		/* html, #esmap, #allmap {width: 100%;height: 85%;overflow: hidden;margin:0;font-family:"微软雅黑";} */
+		#allmap {width: 100%;height: 400px;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+	
+	<title>ElasticSearch + BaiduMap</title>
+</head>
+
+<body>
+	<div id="esmap">
+		<div id="allmap"></div>
+		
+		<div class="tips" style="color: green;font-weight: bold;">提示：</div>
+		<!-- <button @click="reFreshMap">清理搜索结果</button> -->
+		<div class="tips" style="margin-left: 20px;" @click="">1. 以两点位置为边界执行矩阵内坐标点搜索（可移动橙色点位置自定义矩阵搜索）
+			<button @click="geo_bounding_box">搜索矩阵</button>
+		</div>
+		<div class="tips" style="margin-left: 20px;" @click="">2. 以多点位置构成多边形执行搜索（双击地图任意区域添加红色坐标点构建多边形）
+			<!-- <button @click="addPoint">添加搜索点</button> -->
+			<button @click="geo_polygon">搜索多边形</button>
+		</div>
+		<div class="tips" style="margin-left: 20px;" @click="">3. 以中心点位置（画圆）搜索一定范围内的坐标点
+			<button @click="geo_distance">中心点搜索</button>
+			<select v-model="distanceSel">
+				<option value="0.1">100m</option>
+				<option value="1">1km</option>
+				<option value="3">3km</option>
+				<option value="5">5km</option>
+			</select>
+
+		</div>
+
+	</div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+																		<script type="text/javascript" src="https://api.map.baidu.com/getscript?v=2.0&ak=&services=&t=20200103103842&s=1"></script>
+																		<!-- <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak="></script> -->
+
+<script type="text/javascript">
+
+	var index = new Vue({
+		el: "#esmap",
+		data: {
+			geoServerUrl: "http://localhost:8033/esmap",
+
+			map: {},
+			topLeft: {
+				lon: 118.790655,
+				lat: 32.029675
+			},
+			bottomRight: {
+				lon: 118.801111,
+				lat: 32.025328
+			},
+			geoSearchResult: [],
+			searchMultiPoint:[],		// 多个点构建的多边形搜索数组
+
+			distanceSel: 1
+		},
+		mounted() {
+			this.initMap();
+		},
+		created() {
+			
+		},
+		methods: {
+			initMap() {
+				var me = this;
+
+				// 百度地图API功能
+				var map = new BMap.Map("allmap");    // 创建Map实例
+				me.map = map;
+				// 中心点为夫子庙
+				me.map.centerAndZoom(new BMap.Point(118.795254, 32.026904), 17);  // 初始化地图,设置中心点坐标和地图级别
+				//添加地图类型控件
+				me.map.addControl(new BMap.MapTypeControl({
+					mapTypes:[
+						BMAP_NORMAL_MAP,
+						BMAP_HYBRID_MAP
+					]}));	  
+				me.map.setCurrentCity("南京");			// 设置地图显示的城市 此项是必须设置的
+				map.enableScrollWheelZoom(true);     	//开启鼠标滚轮缩放
+				me.map.disableDoubleClickZoom();		// 禁止双击放大地图
+
+				// 自定义图标，绿色：中心点；橙色：可移动，自定义矩阵边界
+				var iconCenter = new BMap.Icon("./img/center.png", new BMap.Size(25, 35));
+				var iconTouch = new BMap.Icon("./img/touch.png", new BMap.Size(25, 35));
+
+				//创建自定义坐标点，以南京夫子庙为中心点的自定义icon
+				var pointCenter = new BMap.Point(118.795254, 32.026904);
+				// var myIcon = new BMap.Icon("./img/center.png", new BMap.Size(25, 35));
+				var markerCenter = new BMap.Marker(pointCenter,{icon:iconCenter});  // 创建标注
+				me.map.addOverlay(markerCenter);              // 将标注添加到地图中
+
+				var optsCenter = {
+					position : pointCenter,    			 // 指定标注下方的文字、文本标注所在的地理位置
+					offset   : new BMap.Size(-40, 20)    //设置文本偏移量
+				}
+				var labelCenter = new BMap.Label("中心点:夫子庙", optsCenter);  // 创建文本标注对象
+					labelCenter.setStyle({
+						color : "green",
+						borderColor : "green",
+						fontSize : "12px",
+						height : "20px",
+						lineHeight : "20px",
+						fontFamily:"微软雅黑"
+					});		// 设置字体的样式
+				me.map.addOverlay(labelCenter);   	// 添加到百度地图中
+
+				// 地图添加双机事件，双击新增点，用于搜索多边形
+				me.map.addEventListener("dblclick", function(e){
+					var newPoint = e.point;
+					console.log(newPoint);
+					me.addPoint(newPoint.lng, newPoint.lat);
+				});
+
+
+				// 1. 以两点位置为边界执行矩阵内坐标点搜索（可移动点位置自定义搜索）
+				var pointTopLeft = new BMap.Point(me.topLeft.lon, me.topLeft.lat);
+				// var myIcon = new BMap.Icon("./img/touch.png", new BMap.Size(25, 35));
+				var markerTopLeft = new BMap.Marker(pointTopLeft,{icon:iconTouch});  // 创建标注
+				me.map.addOverlay(markerTopLeft);              // 将标注添加到地图中
+				// 搜索点，可以拖拽
+				markerTopLeft.enableDragging();
+				markerTopLeft.addEventListener("onmouseup", function(){
+					// 获得移动后的坐标，鼠标释放后获得新的坐标，供es搜索
+					var position = markerTopLeft.getPosition();
+					// 百度坐标的lng和es的lon不一致，需要统一
+					// console.log(position);
+					me.topLeft = me.createGEOPointEntity(position);
+					// console.log(me.topLeft);
+				});
+
+				var pointBottomRight = new BMap.Point(me.bottomRight.lon, me.bottomRight.lat);
+				// var myIcon = new BMap.Icon("./img/touch.png", new BMap.Size(25, 35));
+				var markerBottomRight = new BMap.Marker(pointBottomRight,{icon:iconTouch});  // 创建标注
+				me.map.addOverlay(markerBottomRight);              // 将标注添加到地图中
+				// 搜索点，可以拖拽
+				markerBottomRight.enableDragging();
+				markerBottomRight.addEventListener("onmouseup", function(){
+					// 获得移动后的坐标，鼠标释放后获得新的坐标，供es搜索
+					var position = markerBottomRight.getPosition();
+					// console.log(position);
+					// console.log(me.createGEOPointEntity(position));
+					me.bottomRight = me.createGEOPointEntity(position);
+					// console.log(me.bottomRight);
+				});
+			},
+			createGEOPointEntity(position) {
+				var point = {
+					"lon": position.lng,
+					"lat": position.lat
+				};
+				return point;
+			},
+			// 矩阵搜索
+			geo_bounding_box() {
+				var me = this;
+				me.reFreshMap();
+
+				var topLeft = me.topLeft;
+				var bottomRight = me.bottomRight;
+
+				axios.defaults.withCredentials = true;
+				axios.post(me.geoServerUrl + '/geoBoundingBox',
+						{
+							topLeft: me.topLeft,
+							bottomRight: me.bottomRight
+						})
+					.then(res => {
+						
+						console.log(res.data);
+						var pointResultArr = res.data.data;
+						// debugger;
+						for (var i = 0 ; i < pointResultArr.length ; i ++) {
+							var pointTemp = pointResultArr[i];
+							me.geoSearchResult.push(pointTemp);
+							var point = new BMap.Point(pointTemp.geo.lon, pointTemp.geo.lat);
+							var marker = new BMap.Marker(point);
+							me.map.addOverlay(marker);
+						}
+					});
+			},
+			// 清除地图上的搜索结果
+			reFreshMap(){
+				var me = this;
+
+				var allOverlay = me.map.getOverlays();
+				for (var i = 0; i < allOverlay.length; i++){
+					var mapPoint = allOverlay[i].point;
+					if (mapPoint == null || mapPoint == undefined) {
+						continue;
+					}
+
+					for (var j = 0 ; j < me.geoSearchResult.length ; j ++) {
+						var tmpPoint = me.geoSearchResult[j];
+						if (mapPoint.lng == tmpPoint.geo.lon && mapPoint.lat == tmpPoint.geo.lat) {
+							me.map.removeOverlay(allOverlay[i]);
+						}
+					}
+
+				}
+
+				me.geoSearchResult = [];
+			},
+			// 添加坐标点到es中
+			addPoint(lon, lat) {
+				var me = this;
+
+				// 红色图标：自定义多边形
+				var iconTouch = new BMap.Icon("./img/multi.png", new BMap.Size(25, 35));
+
+				var pointNew = new BMap.Point(lon, lat);
+				// var myIcon = new BMap.Icon("./img/touch.png", new BMap.Size(25, 35));
+				var markerNew = new BMap.Marker(pointNew,{icon:iconTouch});  // 创建标注
+				me.map.addOverlay(markerNew);              // 将标注添加到地图中
+				// 搜索点，可以拖拽
+				// markerNew.enableDragging();
+
+				// 双击后新添加的点放入到多边形搜索的数组中
+				var newPosition = me.createGEOPointEntity(pointNew);
+				me.searchMultiPoint.push(newPosition);
+				console.log(newPosition);
+
+				// markerNew.setTitle("111");
+				markerNew.addEventListener("onmouseup", function(e){
+					// 获得移动后的坐标，鼠标释放后获得新的坐标，供es搜索
+					
+					var position = markerNew.getPosition();
+					// console.log(e.target.point);
+					var newPosition = me.createGEOPointEntity(position);
+					// console.log(newPosition);
+				});
+
+
+				// 鼠标右键添加到es
+				var addPointToElasticSearch = function(e, ee, marker){
+					var newPoint = e;
+					console.log(newPoint);
+
+					var username = prompt("请输入添加的用户名称", "");
+					if(username){
+						console.log("已获得:" + username);
+
+						var centerPosition = me.createGEOPointEntity(newPoint);
+
+						var newESPoint = {
+							"userName": username,
+							"geo": centerPosition,
+							"place": username
+						};
+
+						// 发起请求调用后端，把新坐标插入到es中
+						axios.defaults.withCredentials = true;
+						axios.post(me.geoServerUrl + '/addESPoint', newESPoint)
+							.then(res => {
+								if (res.data.status == 200) {
+									alert("添加成功！");
+								}
+							});
+
+					} else {
+						return;
+					}
+
+				}
+				//创建右键菜单
+				var markerMenu = new BMap.ContextMenu();
+				markerMenu.addItem(new BMap.MenuItem('添加到es', addPointToElasticSearch.bind(markerNew)));
+				markerNew.addContextMenu(markerMenu);
+			},
+			// 根据坐标解析地址
+			getCNAddress(newPoint) {
+				var geocoder = new BMap.Geocoder();   
+				geocoder.getLocation(newPoint, function(rs){
+					var addComp = rs.addressComponents;
+					place = addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber;
+					console.log(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+					return place;
+				}); 
+			},
+			// 搜索多边形
+			geo_polygon() {
+				var me = this;
+				me.reFreshMap();
+
+				var searchMultiPoint = me.searchMultiPoint;
+				if (searchMultiPoint.length < 3) {
+					alert("请至少构建3个坐标点进行多边形搜索！");
+					return;
+				}
+
+				axios.defaults.withCredentials = true;
+				axios.post(me.geoServerUrl + '/geoPolygon', searchMultiPoint)
+					.then(res => {
+						
+						console.log(res.data);
+						var pointResultArr = res.data.data;
+						for (var i = 0 ; i < pointResultArr.length ; i ++) {
+							var pointTemp = pointResultArr[i];
+							me.geoSearchResult.push(pointTemp);
+							var point = new BMap.Point(pointTemp.geo.lon, pointTemp.geo.lat);
+							var marker = new BMap.Marker(point);
+							me.map.addOverlay(marker);
+						}
+					});
+
+				// console.log("geo_polygon");
+			},
+			// 中心点搜索
+			geo_distance() {
+				var me = this;
+				me.reFreshMap();
+
+				// 使用手机的话，可以获取用户坐标，然后发送给后端进行范围查询
+				var centerPoint = new BMap.Point(118.795254, 32.026904);
+				var centerPosition = me.createGEOPointEntity(centerPoint);
+
+				axios.defaults.withCredentials = true;
+				axios.post(me.geoServerUrl + '/geoDistance?km=' + me.distanceSel, centerPosition)
+					.then(res => {
+						
+						console.log(res.data);
+						var pointResultArr = res.data.data;
+						for (var i = 0 ; i < pointResultArr.length ; i ++) {
+							var pointTemp = pointResultArr[i];
+							me.geoSearchResult.push(pointTemp);
+							var point = new BMap.Point(pointTemp.geo.lon, pointTemp.geo.lat);
+							var marker = new BMap.Marker(point);
+							me.map.addOverlay(marker);
+						}
+					});
+
+				// console.log(me.distanceSel);
+			}
+		}
+	});
+</script>
+</html>

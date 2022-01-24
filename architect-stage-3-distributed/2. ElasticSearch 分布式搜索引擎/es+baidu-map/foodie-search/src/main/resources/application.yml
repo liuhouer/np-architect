@@ -1,0 +1,27 @@
+############################################################
+#
+# web访问端口号  约定：8033
+#
+############################################################
+server:
+  port: 8033
+  tomcat:
+    uri-encoding: UTF-8
+
+############################################################
+#
+# 配置数据源信息
+#
+############################################################
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource              # 数据源 HikariCP
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动
+    url: jdbc:mysql://localhost:3306/foodie-shop?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: root
+    password: root
+  data:
+    elasticsearch:
+      cluster-name: es6
+      cluster-nodes: 192.168.1.187:9300
+

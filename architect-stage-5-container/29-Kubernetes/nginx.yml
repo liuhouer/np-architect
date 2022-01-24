@@ -1,0 +1,193 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: web_server
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        volumeMounts:
+        - mountPath: /mnt/empdir
+          name: shared-volume
+        env:
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: username
+        - name: SECRET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: password              
+      volumes:
+      - name: shared-volume
+        secret:
+          secretName: mysecret
+          items:
+          - key: username
+            path: my/myusername
+          - key: password
+            path: my/mypassword
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  type: NodePort
+  selector:
+    app: web_server
+  ports:
+  - protocol: TCP
+    nodePort: 30000
+    port: 8080
+    targetPort: 80
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mypv1
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: nfs
+  nfs:
+    path: /mnt
+    server: 172.20.230.77
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc1
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: nfs
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+data:
+  password: MTIzNDU2
+  username: YWRtaW4=
+---
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /mnt
+    server: 172.20.230.77
+---
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-nginx
+spec:
+  podSelector:
+    matchLabels:
+      app: web_server
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          access: "true"
+    - ipBlock:
+        cidr: 0.0.0.0/0
+    ports:
+    - protocol: TCP
+      port: 80
+---
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+---
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+---
+#Nginx Pod
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mynginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.7.9
+    volumeMounts:
+    - mountPath: /mnt
+      name: mount-volume
+  volumes:
+  - name: mount-volume
+    emptyDir: {}
+
+    volumeMounts:
+    - mountPath: /etc/myinfo
+      name: myinfo
+      readOnly: true
+  volumes:
+  - name: secret
+    secret:
+      secretName: mysecret
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+data:
+  password: MTIzNDU2
+  username: YWRtaW4=
+  
