@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imooc.live.seata.tcc.dao.ZooDao" >
+
+	<resultMap id="BaseResultMap" type="com.imooc.live.seata.tcc.entity.Zoo" >
+		<result column="animal_type" property="animalType" jdbcType="VARCHAR" />
+		<result column="locked" property="locked" jdbcType="INTEGER" />
+		<result column="available" property="available" jdbcType="INTEGER" />
+		<result column="frozen" property="frozen" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="getElephant" resultMap="BaseResultMap">
+		select * from zoo where animal_type='1' for update
+	</select>
+
+	<!-- 锁定 -->
+	<update id="lock">
+		update zoo set available=available- #{num}, locked=locked + #{num}
+			where animal_type='1'
+	</update>
+
+	<!-- 冰冻 -->
+	<update id="freeze">
+		update zoo set locked=locked-#{num}, frozen=frozen+#{num}
+			where animal_type='1'
+	</update>
+
+	<!-- 回滚 -->
+	<delete id="cancel" >
+		update zoo set available=available + #{num}, locked=locked - #{num}
+			where animal_type='1'
+	</delete>
+	
+</mapper>

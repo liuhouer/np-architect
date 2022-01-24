@@ -1,0 +1,13 @@
+安装Lua（可选）：
+1. 参考http://www.lua.org/ftp/教程，下载5.3.5_1版本，本地安装
+如果你使用的是Mac，那建议用brew工具直接执行brew install lua就可以顺利安装，
+有关brew工具的安装可以参考https://brew.sh/网站，建议翻墙否则会很慢。
+
+使用brew安装后的目录在/usr/local/Cellar/lua/5.3.5_1
+
+2. 安装IDEA插件，在IDEA->Preferences面板，Plugins，
+里面Browse repositories，在里面搜索lua，然后就选择同名插件lua。安装好后重启IDEA
+
+3. 配置Lua SDK的位置： IDEA->File->Project Structure,
+选择添加Lua，路径指向Lua SDK的bin文件夹，我本地的地址是：
+/usr/local/Cellar/lua/5.3.5_1/bin

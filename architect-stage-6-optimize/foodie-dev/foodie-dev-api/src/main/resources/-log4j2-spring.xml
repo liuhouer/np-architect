@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- Log4j2日志配置可参考官方文档： -->
+  <!-- http://logging.apache.org/log4j/2.x/manual/configuration.html -->
+
+  <!--变量配置-->
+  <Properties>
+    <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+    <Property name="LOG_LEVEL_PATTERN">%5p</Property>
+    <Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property>
+    <!-- 带颜色高亮的日志打印格式，适合开发 -->
+    <Property name="CONSOLE_LOG_PATTERN">%clr{%d{${LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+    <!-- 无颜色的日志打印格式，适合打印到文件 -->
+    <Property name="FILE_LOG_PATTERN">%d{${LOG_DATEFORMAT_PATTERN}} ${LOG_LEVEL_PATTERN} %pid --- [%t] %-40.40c{1.} : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+    <property name="FILE_PATH" value="~/foodie-dev/logs"/>
+    <property name="FILE_NAME" value="foodie-dev"/>
+  </Properties>
+
+  <appenders>
+    <!-- 输出到控制台-->
+    <console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
+    </console>
+
+    <!-- 该配置每次运行程序会自动清空日志文件(由append属性决定)，适合临时测试用 -->
+    <File name="FileLog" fileName="${FILE_PATH}/${FILE_NAME}-test.log" append="false">
+      <PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
+    </File>
+
+    <!-- 打印info及以上级别日志，每次大小超过size，则会自动存入按年份-月份建立的文件夹下面并进行压缩 -->
+    <RollingFile name="RollingFile"
+                 fileName="${FILE_PATH}/${FILE_NAME}.log"
+                 filePattern="${FILE_PATH}/${FILE_NAME}-INFO-%d{yyyy-MM-dd}_%i.log.gz">
+      <!-- 只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+      <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+      <PatternLayout pattern="${FILE_LOG_PATTERN}"/>
+      <Policies>
+        <!-- 指定多久滚动一次、文件达到多大滚动1次 -->
+        <TimeBasedTriggeringPolicy interval="1"/>
+        <SizeBasedTriggeringPolicy size="10MB"/>
+      </Policies>
+      <!-- 默认7，表示只保留7个文件 -->
+      <DefaultRolloverStrategy max="15"/>
+    </RollingFile>
+  </appenders>
+
+  <loggers>
+    <!-- 单独指定日志的形式，比如要为指定包下的class指定不同的日志级别 -->
+    <!-- additivity设为false，则只会在自己的appender里输出，不会在父Logger的appender里输出 -->
+    <!-- 为org.mybatis包设置日志级别是info -->
+    <logger name="org.springframework" level="info" additivity="false">
+      <AppenderRef ref="Console"/>
+      <appender-ref ref="RollingFile"/>
+    </logger>
+
+    <logger name="com.imooc" level="debug" >
+      <AppenderRef ref="Console"/>
+    </logger>
+
+    <!-- 其他包的日志级别如何、如何打印 -->
+    <root level="info">
+      <appender-ref ref="Console"/>
+      <appender-ref ref="FileLog"/>
+      <appender-ref ref="RollingFile"/>
+    </root>
+  </loggers>
+</configuration>
+

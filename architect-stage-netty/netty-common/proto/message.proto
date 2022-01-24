@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_package = "com.bfxy.common.protobuf";
+option java_outer_classname = "MessageModule";
+
+enum MessageType {
+	REQUEST = 0;
+	RESPONSE = 1;
+}
+
+enum ResultType {
+	SUCCESS = 0;
+	FAILURE = 1;
+	SYS_ERROR = 2;
+}
+
+message Message {
+
+	int64 crcCode = 1;
+	
+	MessageType messageType = 2;
+	
+	ResultType resultType = 3;
+	
+	string module = 4;
+	
+	string cmd = 5;
+	
+	bytes body = 6;
+	
+}

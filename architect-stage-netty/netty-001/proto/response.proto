@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.bfxy.netty.protobuf";
+option java_outer_classname = "ResponseModule";
+
+message Response {
+
+	string id = 1;
+	
+	int32 code = 2;
+	
+	string desc = 3;
+
+}

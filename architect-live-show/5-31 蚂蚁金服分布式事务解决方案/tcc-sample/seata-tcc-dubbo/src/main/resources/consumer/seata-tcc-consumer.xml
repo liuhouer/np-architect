@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  Copyright 1999-2018 Alibaba Group Holding Ltd.
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd" default-autowire="byName">
+
+    <bean class="io.seata.spring.annotation.GlobalTransactionScanner">
+        <constructor-arg value="tcc-sample"/>
+        <constructor-arg value="my_test_tx_group"/>
+    </bean>
+
+    <dubbo:application name="tcc-consumer">
+        <!-- 把这个关了，非必要功能，不然启动会有warning报端口占用 -->
+        <dubbo:parameter key="qos.enable" value="false"/>
+    </dubbo:application>
+
+    <!--从zk注册中心拉服务，sample里我们用的是mock zk-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+
+    <dubbo:protocol name="dubbo" port="-1" />
+    <!-- roundrobin是负载均衡策略，具体规则可以参考微服务阶段Ribbon章节（技术不同但作用效果一样） -->
+    <dubbo:provider timeout="5000"  threads="25" threadpool="fixed" loadbalance="roundrobin"/>
+
+    <!-- 作为消费者，订阅TaskOne服务 -->
+    <dubbo:reference id="taksOne" interface="com.imooc.live.seata.tcc.task.TaskOne" check="false" lazy="true"/>
+    <!-- 作为消费者，订阅TaskTwo服务 -->
+    <dubbo:reference id="taskTwo" interface="com.imooc.live.seata.tcc.task.TaskTwo" check="false" lazy="true"/>
+
+</beans>

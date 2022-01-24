@@ -1,0 +1,12 @@
+# JDK 8垃圾收集日志打印参数
+-Xms50m -Xmx50m -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintGCCause -Xloggc:/Users/itmuch.com/gclog.log
+
+# JDK 11等价写法
+-Xms50m -Xmx50m -Xlog:gc*=trace:file=/Users/itmuch.com/xloggc.log
+
+
+
+# JDK 8运行时日志打印参数
+-XX:+TraceClassLoading -XX:+TraceBiasedLocking
+
+-Xlog:class+load=debug,biasedlocking=debug:file=/Users/itmuch.com/trace.log

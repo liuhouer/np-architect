@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: config-bus-server
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/banxian-yao/config-repo.git
+          force-pull: true
+          # 强制拉取资源文件
+#          search-paths:
+#          username:
+#          password:
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+
+server:
+  port: 60002
+
+
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,17 @@
+# 解压安装
+tar -zxvf logstash-6.6.0.tar.gz -C /usr/local/
+
+## conf下配置文件说明：
+# logstash配置文件：/config/logstash.yml
+# JVM参数文件：/config/jvm.options
+#  日志格式配置文件：log4j2.properties
+#  制作Linux服务参数：/config/startup.options
+
+
+vim /usr/local/logstash-6.6.0/config/logstash.yml
+## 增加workers工作线程数 可以有效的提升logstash性能
+pipeline.workers: 16
+
+
+## 启动logstash
+nohup /usr/local/logstash-6.6.0/bin/logstash -f /usr/local/logstash-6.6.0/script/logstash-script.conf &

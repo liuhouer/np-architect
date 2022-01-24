@@ -1,0 +1,138 @@
+############################################################
+#
+# web访问端口号  约定：8088
+#
+############################################################
+server:
+#  port: 8088
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 15
+    min-spare-threads: 8
+  max-http-header-size: 80KB
+
+############################################################
+#
+# 配置数据源信息
+#
+############################################################
+spring:
+  profiles:
+    active: dev
+  datasource:                                           # 数据源的相关配置
+    type: com.zaxxer.hikari.HikariDataSource          # 数据源类型：HikariCP
+    driver-class-name: com.mysql.cj.jdbc.Driver          # mysql驱动
+#    url: jdbc:mysql://localhost:3306/foodie-shop-dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: root
+#    password: root
+    hikari:
+      connection-timeout: 30000       # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 默认:30秒
+      minimum-idle: 5                 # 最小连接数
+      maximum-pool-size: 20           # 最大连接数
+      auto-commit: true               # 自动提交
+      idle-timeout: 600000            # 连接超时的最大时长（毫秒），超时则被释放（retired），默认:10分钟
+      pool-name: DateSourceHikariCP     # 连接池名字
+      max-lifetime: 1800000           # 连接的生命时长（毫秒），超时而且没被使用则被释放（retired），默认:30分钟 1800000ms
+      connection-test-query: SELECT 1
+  servlet:
+    multipart:
+      max-file-size: 512000     # 文件上传大小限制为500kb
+      max-request-size: 512000  # 请求大小限制为500kb
+  application:
+    name: foodie-dev
+  jmx:
+    # 设置成true才会在/actuator/metrics端点展示hikari相关的监控信息
+    enabled: true
+  task:
+    execution:
+      pool:
+        queue-capacity: 200
+        max-size: 8
+        core-size: 8
+#  boot:
+#    admin:
+#      client:
+#        url: http://localhost:8988
+#        instance:
+#          # 注册到admin server的微服务名称
+#          name: foodie-dev
+
+############################################################
+#
+# mybatis 配置
+#
+############################################################
+mybatis:
+  type-aliases-package: com.imooc.pojo          # 所有POJO类所在包路径
+  mapper-locations: classpath:mapper/*.xml      # mapper映射文件
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+############################################################
+#
+# mybatis mapper 配置
+#
+############################################################
+# 通用 Mapper 配置
+mapper:
+  mappers: com.imooc.my.mapper.MyMapper
+  not-empty: false    # 在进行数据库操作的的时候，判断表达式 username != null, 是否追加 username != ''
+  identity: MYSQL
+# 分页插件配置
+pagehelper:
+  helperDialect: mysql
+  supportMethodsArguments: true
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#  server:
+#    port: 8089
+
+info:
+  project-name: foodie-dev
+  author: damu
+  owner-email: xxxx
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+javamelody:
+  # 是否启用javamelody，默认是true
+  # 由于javamelody和hikari存在兼容问题，所以暂时关闭
+  enabled: false
+  # 排除不想监控的数据源
+  # excluded-datasources: secretSource,topSecretSource
+  # 是否启用spring service & controller的监控，默认是true
+  spring-monitoring-enabled: true
+  # Initialization parameters for JavaMelody (optional)
+  # See: https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
+  init-parameters:
+    # 是否记录http请求
+    log: true
+    # 哪些路径不需要监控
+    #url-exclude-pattern: (/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)
+    # 用来转换http请求的路径，将其中动态的部分删除
+    # /users/1   /users/2
+    #http-transform-pattern: \d+
+    # 设置账号密码
+    authorized-users: admin:pwd
+    # 指定存储数据的路径
+    storage-directory: /tmp/javamelody-${server.port}
+    # javamelody的访问路径，默认/monitoring
+    #monitoring-path: /admin/performance
+  # 和actuator配合使用
+  # [1.路径挂到/actuator/monitoring 2.localhost:8089/actuator/monitoring
+  # 3.账号密码设置失效]
+  management-endpoint-monitoring-enabled: true
+  excluded-datasources: dataSource
+logging:
+  level:
+    com.imooc.mapper: error
+    net.bull: error
+    javamelody: error

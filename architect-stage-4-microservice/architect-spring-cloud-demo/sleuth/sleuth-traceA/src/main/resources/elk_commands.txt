@@ -1,0 +1,33 @@
+1. 下载镜像（时间很久，耐心要足）：
+docker pull sebp/elk
+
+2. 创建Docker容器（只用在第一次使用的时候才创建）
+docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 -e ES_MIN_MEM=128m  -e ES_MAX_MEM=1024m -it --name elk sebp/elk
+
+3. 进入docker容器：
+docker exec -it elk /bin/bash
+
+4. 修改配置文件
+配置文件的位置：/etc/logstash/conf.d/02-beats-input.conf
+将其中的内容都删掉，替换成下面的配置
+input {
+    tcp {
+        port => 5044
+        codec => json_lines
+
+    }
+
+}
+output{
+    elasticsearch {
+    hosts => ["localhost:9200"]
+
+    }
+
+}
+
+5.	重启docker容器（大概等5-10分钟，等待服务重启）
+docker restart elk
+
+6. 访问Kibana
+http://localhost:5601/

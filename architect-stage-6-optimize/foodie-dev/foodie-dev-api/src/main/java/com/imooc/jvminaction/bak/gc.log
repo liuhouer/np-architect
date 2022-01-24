@@ -1,0 +1,15 @@
+# JDK相关信息
+Java HotSpot(TM) 64-Bit Server VM (25.201-b09) for bsd-amd64 JRE (1.8.0_201-b09), built on Dec 15 2018 18:35:23 by "java_re" with gcc 4.2.1 (Based on Apple Inc. build 5658) (LLVM build 2336.11.00)
+# 内存相关信息
+Memory: 4k page, physical 8388608k(304084k free)
+
+/proc/meminfo:
+
+# 展示当前应用使用的JVM参数
+CommandLine flags: -XX:-BytecodeVerificationLocal -XX:-BytecodeVerificationRemote -XX:InitialHeapSize=52428800 -XX:+ManagementServer -XX:MaxHeapSize=52428800 -XX:+PrintGC -XX:+PrintGCDateStamps -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:TieredStopAtLevel=1 -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseSerialGC
+
+# 年轻代
+2020-05-08T21:58:11.544-0800: 0.392: [GC (Allocation Failure) 2020-05-08T21:58:11.544-0800: 0.392: [DefNew: 13696K->1663K(15360K), 0.0046137 secs] 13696K->2045K(49536K), 0.0046991 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]
+
+# Full GC
+2020-05-08T21:58:12.265-0800: 1.113: [Full GC (Metadata GC Threshold) 2020-05-08T21:58:12.265-0800: 1.113: [Tenured: 5128K->6291K(34176K), 0.0201333 secs] 14306K->6291K(49536K), [Metaspace: 20532K->20532K(1067008K)], 0.0202185 secs] [Times: user=0.02 sys=0.00, real=0.02 secs]

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "com.bfxy.netty.protobuf";
+option java_outer_classname = "UserModule";
+
+message User {
+  string userId = 1;
+  int32 age = 2;
+  string userName = 3;
+  repeated string favorite = 4;
+}

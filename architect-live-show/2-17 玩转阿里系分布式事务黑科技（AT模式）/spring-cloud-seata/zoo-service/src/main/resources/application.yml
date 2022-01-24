@@ -1,0 +1,32 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+logging:
+  level:
+    io:
+      seata: info
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+  typeAliasesPackage: com.imooc.architect.entity
+
+server:
+  port: 10081
+
+spring:
+  application:
+    name: zoo-service
+  cloud:
+    alibaba:
+      seata:
+        # 这个group不要写错了，和file.conf中service节点下的vgroup_mapping.banxian_tx_group命名一致
+        # 服务发现机制回去file.conf中找到对应事务组的application ID
+        tx-service-group: banxian_tx_group
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    password: root
+    url: jdbc:mysql://localhost:3306/seata-zoo
+    username: root

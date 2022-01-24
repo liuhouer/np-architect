@@ -1,0 +1,148 @@
+## 创建一个watcher,比如定义一个trigger 每个10s钟看一下input里的数据
+## 创建一个watcher,比如定义一个trigger 每个5s钟看一下input里的数据
+PUT _xpack/watcher/watch/error_log_collector_watcher
+{
+  "trigger": {
+    "schedule": {
+      "interval": "5s"
+    }
+  },
+  "input": {
+    "search": {
+      "request": {
+        "indices": ["<error_log_collector-{now+8h/d}>"],
+        "body": {
+          "size": 0,
+          "query": {
+            "bool": {
+              "must": [
+                  {
+                    "term": {"level": "ERROR"}
+                  }
+              ],
+              "filter": {
+                "range": {
+                    "currentDateTime": {
+                    "gt": "now-30s" , "lt": "now"
+                  }
+                }
+              } 
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "condition": {
+    "compare": {
+      "ctx.payload.hits.total": {
+        "gt": 0
+      }
+    }
+  },
+ 
+  "transform": {
+    "search": {
+      "request": {
+        "indices": ["<error-log-collector-{now+8h/d}>"],
+        "body": {
+          "size": 1,
+          "query": {
+            "bool": {
+              "must": [
+                  {
+                    "term": {"level": "ERROR"}
+                  }
+              ],
+              "filter": {
+                "range": {
+                    "currentDateTime": {
+                    "gt": "now-30s" , "lt": "now"
+                  }
+                }
+              } 
+            }
+          },
+          "sort": [
+            {
+                "currentDateTime": {
+                    "order": "desc"
+                }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "actions": {
+    "test_error": {
+      "webhook" : {
+        "method" : "POST",
+        "url" : "http://192.168.11.31:8001/accurateWatch",
+        "body" : "{\"title\": \"异常错误告警\", \"applicationName\": \"{{#ctx.payload.hits.hits}}{{_source.applicationName}}{{/ctx.payload.hits.hits}}\", \"level\":\"告警级别P1\", \"body\": \"{{#ctx.payload.hits.hits}}{{_source.messageInfo}}{{/ctx.payload.hits.hits}}\", \"executionTime\": \"{{#ctx.payload.hits.hits}}{{_source.currentDateTime}}{{/ctx.payload.hits.hits}}\"}"
+      }
+    }
+ }
+}
+
+# 查看一个watcher
+# 
+GET _xpack/watcher/watch/error_log_collector_watcher
+
+
+#删除一个watcher
+DELETE _xpack/watcher/watch/error_log_collector_watcher
+
+#执行watcher
+# POST _xpack/watcher/watch/error_log_collector_watcher/_execute
+
+#查看执行结果
+GET /.watcher-history*/_search?pretty
+{
+  "sort" : [
+    { "result.execution_time" : "desc" }
+  ],
+  "query": {
+    "match": {
+      "watch_id": "error_log_collector_watcher"
+    }
+  }
+}
+
+GET error-log-collector-2019.09.18/_search?size=10
+{
+
+  "query": {
+    "match": {
+      "level": "ERROR"
+    }
+  }
+  ,
+  "sort": [
+    {
+        "currentDateTime": {
+            "order": "desc"
+        }
+    }
+  ] 
+}
+
+
+GET error-log-collector-2019.09.18/_search?size=10
+{
+
+  "query": {
+    "match": {
+      "level": "ERROR"
+    }
+  }
+  ,
+  "sort": [
+    {
+        "currentDateTime": {
+            "order": "desc"
+        }
+    }
+  ] 
+}

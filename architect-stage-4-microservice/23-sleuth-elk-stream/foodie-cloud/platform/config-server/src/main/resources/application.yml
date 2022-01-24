@@ -1,0 +1,42 @@
+server:
+  port: 20003
+
+spring:
+  application:
+    name: config-server
+  ## rabbitMQ用于Bus推送
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    config:
+      server:
+        # 属性重载
+        overrides:
+          test: mytest
+        git:
+          uri: https://github.com/banxian-yao/foodie-cloud-config.git
+          force-pull: true
+          # 将配置文件放到接入方服务名称对应文件夹下面
+          search-paths: '{application}'
+          # username:
+          # password:
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+
+## 开启所有actuator-endpoint
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  security:
+    enabled: false

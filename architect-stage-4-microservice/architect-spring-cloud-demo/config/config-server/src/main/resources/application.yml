@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/banxian-yao/config-repo.git
+          force-pull: true
+          # 强制拉取资源文件
+#          search-paths:
+#          username:
+#          password:
+
+server:
+  port: 60000
+
+
+# 不限长度的JCE组件组件下载（注意下载对应JDK版本的组件）
+# https://www.oracle.com/technetwork/java/javase/downloads/jce-all-download-5170447.html

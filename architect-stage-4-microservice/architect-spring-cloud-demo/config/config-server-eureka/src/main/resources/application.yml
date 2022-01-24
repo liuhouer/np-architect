@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: config-server-eureka
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/banxian-yao/config-repo.git
+          force-pull: true
+          basedir: /Users/qiyao/config-server
+          # 强制拉取资源文件
+#          search-paths:
+#          username:
+#          password:
+          # 可以配置多个注册中心，根据pattern匹配
+          repos:
+            myrepo:
+              uri: xxx
+              pattern: test*
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+
+server:
+  port: 60001
+

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "com.bfxy.common.protobuf";
+option java_outer_classname = "GroupModule";
+
+message Group {
+	
+	string groupId = 1;
+	
+	string groupName = 2;
+
+}

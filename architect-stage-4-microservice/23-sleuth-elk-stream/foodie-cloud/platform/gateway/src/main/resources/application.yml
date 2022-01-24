@@ -1,0 +1,72 @@
+# 可以尝试集成config-server来配置
+
+spring:
+  application:
+    name: platform-gateway
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+    password: imooc
+  main:
+    allow-bean-definition-overriding: true
+  # 链路追踪
+  zipkin:
+    discoveryClientEnabled: true
+    base-url: http://ZIPKIN-SERVER/
+    locator:
+      discovery:
+        enabled: true
+  sleuth:
+    sampler:
+      probability: 1
+
+  # 跨域配置
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            # 返回的资源共享给请求来源
+            allowed-origins:
+            - "http://localhost:8080"
+            - "http://shop.z.mukewang.com:8080"
+            - "http://center.z.mukewang.com:8080"
+            - "http://shop.z.mukewang.com"
+            - "http://center.z.mukewang.com"
+            - "*"
+            # 比如cookie, authorization之类的认证信息
+            allow-credentials: true
+            allowed-headers: "*"
+            allowed-methods: "*"
+            expose-headers: "*"
+            # 表示Options可以在浏览器缓存多长时间
+            max-age: 600
+      locator:
+        enabled: false
+        lower-case-service-id: true
+      # routes:
+
+server:
+  port: 20004
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+
+## 开启所有actuator-endpoint
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  security:
+    enabled: false
+
+
+
+

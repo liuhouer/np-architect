@@ -1,0 +1,6 @@
+spring:
+  appliction:
+    name: hystrix-dashboard
+
+server:
+  port: 20002

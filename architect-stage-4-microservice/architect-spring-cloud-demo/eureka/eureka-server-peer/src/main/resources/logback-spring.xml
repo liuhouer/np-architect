@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                [%d{HH:mm:ss.SSS}] %-5level %logger{15} - %msg%n
+            </pattern>
+        </layout>
+    </appender>
+
+    <appender name="fileLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>
+                [%d{HH:mm:ss.SSS}] %-5level [%thread]%logger{15} - %msg%n
+            </pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/%d.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+    <root level="DEBUG">
+        <appender-ref ref = "consoleLog"/>
+        <appender-ref ref = "fileLog"/>
+    </root>
+</configuration>

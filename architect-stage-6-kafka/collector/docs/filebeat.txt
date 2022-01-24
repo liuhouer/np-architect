@@ -1,0 +1,42 @@
+filebeat安装：
+
+cd /usr/local/software
+tar -zxvf filebeat-6.6.0-linux-x86_64.tar.gz -C /usr/local/
+cd /usr/local
+mv filebeat-6.6.0-linux-x86_64/ filebeat-6.6.0
+
+## 配置filebeat，可以参考filebeat.full.yml中的配置。
+vim /usr/local/filebeat-5.6.2/filebeat.yml
+
+filebeat启动：
+
+## 检查配置是否正确
+cd /usr/local/filebeat-6.6.0
+./filebeat -c filebeat.yml -configtest
+## Config OK
+
+## 启动filebeat
+/usr/local/filebeat-6.6.0/filebeat &
+ps -ef | grep filebeat
+
+
+
+
+## 启动kafka：
+/usr/local/kafka_2.12/bin/kafka-server-start.sh /usr/local/kafka_2.12/config/server.properties &
+
+## 查看topic列表：
+kafka-topics.sh --zookeeper 192.168.11.111:2181 --list
+
+## 创建topic
+kafka-topics.sh --zookeeper 192.168.11.111:2181 --create --topic app-log-collector --partitions 1  --replication-factor 1
+kafka-topics.sh --zookeeper 192.168.11.111:2181 --create --topic error-log-collector --partitions 1  --replication-factor 1  
+
+
+
+
+
+## 查看topic情况
+kafka-topics.sh --zookeeper 192.168.11.111:2181 --topic app-log-test --describe
+
+

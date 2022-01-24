@@ -1,0 +1,33 @@
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+feign:
+  hystrix:
+    enabled: false
+logging:
+  level:
+    io:
+      seata: info
+
+mybatis:
+  mapperLocations: classpath:mapper/*.xml
+  typeAliasesPackage: com.imooc.architect.entity
+
+server:
+  port: 10082
+spring:
+  application:
+    name: housekeep-service
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: banxian_tx_group
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    password: root
+    url: jdbc:mysql://localhost:3306/seata-housework
+    username: root

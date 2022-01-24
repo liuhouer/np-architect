@@ -1,0 +1,20 @@
+dubbo:
+  application:
+    name:  dubbo-consumer
+  registry:
+    address: zookeeper://127.0.0.1:2181
+    # 读者请换成自己的zookeeperip
+    protocol: zookeeper
+    check: false
+  # dubbo-admin配置
+  metadata-report:
+    address: zookeeper://127.0.0.1:2181
+  monitor:
+    protocol: register
+  consumer:
+    # 启动时检查服务提供者是否存在，不存在就报错
+    check: false
+    timeout: 3000
+
+server:
+  port: 63000

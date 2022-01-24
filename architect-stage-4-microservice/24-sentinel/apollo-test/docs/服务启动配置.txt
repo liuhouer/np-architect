@@ -1,0 +1,3 @@
+-Dcsp.sentinel.dashboard.server=localhost:8080 
+-Dproject.name=apollo-test
+-Dcsp.sentinel.api.port=8719

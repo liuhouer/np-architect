@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imooc.architect.dao.HouseworkDao" >
+  <resultMap id="BaseResultMap" type="com.imooc.architect.entity.Housework" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="ANIMAL_ID" property="animalId" jdbcType="BIGINT" />
+    <result column="FRIDGE_ID" property="fridgeId" jdbcType="BOOLEAN" />
+    <result column="STATUS_ID" property="statusId" jdbcType="INTEGER" />
+  </resultMap>
+
+  <insert id="start">
+    INSERT INTO `housework` (`id`,`animal_id`,`fridge_id`,`status_id`)
+    VALUES(NULL, #{animalId}, #{fridgeId}, 1);
+  </insert>
+
+  <update id="finish">
+    UPDATE housework SET status_id = 2 WHERE id = #{id} and status_id = 1
+  </update>
+
+</mapper>

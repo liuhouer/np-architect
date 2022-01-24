@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  	<modelVersion>4.0.0</modelVersion>
+  	<parent>
+    	<groupId>com.bfxy.base.rabbit</groupId>
+    	<artifactId>rabbit-parent</artifactId>
+    	<version>0.0.1-SNAPSHOT</version>
+  	</parent>
+  	<artifactId>rabbit-task</artifactId>
+  	<properties>
+		<elastic-job.version>2.1.4</elastic-job.version>
+	</properties>
+	<dependencies>
+	    <!-- spring boot dependency -->
+	    <dependency>
+	      	<groupId>org.springframework.boot</groupId>
+	      	<artifactId>spring-boot-starter</artifactId>
+	    </dependency>
+		<!--  elastic-job dependency -->
+	    <dependency>
+	      <groupId>com.dangdang</groupId>
+	      <artifactId>elastic-job-lite-core</artifactId>
+	      <version>${elastic-job.version}</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.dangdang</groupId>
+	      <artifactId>elastic-job-lite-spring</artifactId>
+	      <version>${elastic-job.version}</version>
+	    </dependency>
+	    <dependency>
+	    	<groupId>org.springframework.boot</groupId>
+	    	<artifactId>spring-boot-configuration-processor</artifactId>
+	    	<optional>true</optional>
+	    </dependency>
+	</dependencies>    	
+</project>

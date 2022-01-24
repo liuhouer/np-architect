@@ -1,0 +1,115 @@
+// 描述信息
+Classfile /Users/itmuch.com/develop/architecture/code/javaarchitect/foodie-dev/foodie-dev-api/src/main/java/com/imooc/jvm/jvm/JVMTest2.class
+  Last modified 2020-3-29; size 661 bytes
+  MD5 checksum 316fdf50db313832fbc2855bbb3ce572
+  Compiled from "JVMTest2.java"
+// 描述信息
+public class com.imooc.jvm.jvm.JVMTest2
+  minor version: 0
+  major version: 52
+  flags: ACC_PUBLIC, ACC_SUPER
+// 常量池
+Constant pool:
+   #1 = Methodref          #12.#28        // java/lang/Object."<init>":()V
+   #2 = Class              #29            // java/lang/StringBuilder
+   #3 = Methodref          #2.#28         // java/lang/StringBuilder."<init>":()V
+   #4 = Fieldref           #7.#30         // com/imooc/jvm/jvm/JVMTest2.staticField:Ljava/lang/String;
+   #5 = Methodref          #2.#31         // java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+   #6 = Fieldref           #7.#32         // com/imooc/jvm/jvm/JVMTest2.field:Ljava/lang/String;
+   #7 = Class              #33            // com/imooc/jvm/jvm/JVMTest2
+   #8 = String             #34            // AAA
+   #9 = Methodref          #2.#35         // java/lang/StringBuilder.toString:()Ljava/lang/String;
+  #10 = Methodref          #7.#28         // com/imooc/jvm/jvm/JVMTest2."<init>":()V
+  #11 = Methodref          #7.#36         // com/imooc/jvm/jvm/JVMTest2.add:()Ljava/lang/String;
+  #12 = Class              #37            // java/lang/Object
+  #13 = Utf8               CONST_FIELD
+  #14 = Utf8               Ljava/lang/String;
+  #15 = Utf8               ConstantValue
+  #16 = Utf8               staticField
+  #17 = Utf8               field
+  #18 = Utf8               <init>
+  #19 = Utf8               ()V
+  #20 = Utf8               Code
+  #21 = Utf8               LineNumberTable
+  #22 = Utf8               add
+  #23 = Utf8               ()Ljava/lang/String;
+  #24 = Utf8               main
+  #25 = Utf8               ([Ljava/lang/String;)V
+  #26 = Utf8               SourceFile
+  #27 = Utf8               JVMTest2.java
+  #28 = NameAndType        #18:#19        // "<init>":()V
+  #29 = Utf8               java/lang/StringBuilder
+  #30 = NameAndType        #16:#14        // staticField:Ljava/lang/String;
+  #31 = NameAndType        #38:#39        // append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #32 = NameAndType        #17:#14        // field:Ljava/lang/String;
+  #33 = Utf8               com/imooc/jvm/jvm/JVMTest2
+  #34 = Utf8               AAA
+  #35 = NameAndType        #40:#23        // toString:()Ljava/lang/String;
+  #36 = NameAndType        #22:#23        // add:()Ljava/lang/String;
+  #37 = Utf8               java/lang/Object
+  #38 = Utf8               append
+  #39 = Utf8               (Ljava/lang/String;)Ljava/lang/StringBuilder;
+  #40 = Utf8               toString
+{
+  // 字段的信息
+  private static final java.lang.String CONST_FIELD;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PRIVATE, ACC_STATIC, ACC_FINAL
+    ConstantValue: String AAA
+
+  private static java.lang.String staticField;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PRIVATE, ACC_STATIC
+
+  private java.lang.String field;
+    descriptor: Ljava/lang/String;
+    flags: ACC_PRIVATE
+
+  // 方法的信息
+  public com.imooc.jvm.jvm.JVMTest2();
+    descriptor: ()V
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
+      LineNumberTable:
+        line 3: 0
+
+  public java.lang.String add();
+    descriptor: ()Ljava/lang/String;
+    flags: ACC_PUBLIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #2                  // class java/lang/StringBuilder
+         3: dup
+         4: invokespecial #3                  // Method java/lang/StringBuilder."<init>":()V
+         7: getstatic     #4                  // Field staticField:Ljava/lang/String;
+        10: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        13: aload_0
+        14: getfield      #6                  // Field field:Ljava/lang/String;
+        17: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        20: ldc           #8                  // String AAA
+        22: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+        25: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+        28: areturn
+      LineNumberTable:
+        line 9: 0
+
+  public static void main(java.lang.String[]);
+    descriptor: ([Ljava/lang/String;)V
+    flags: ACC_PUBLIC, ACC_STATIC
+    Code:
+      stack=2, locals=1, args_size=1
+         0: new           #7                  // class com/imooc/jvm/jvm/JVMTest2
+         3: dup
+         4: invokespecial #10                 // Method "<init>":()V
+         7: invokevirtual #11                 // Method add:()Ljava/lang/String;
+        10: pop
+        11: return
+      LineNumberTable:
+        line 13: 0
+        line 14: 11
+}
+SourceFile: "JVMTest2.java"

@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: config-bus-client
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      default-binder: rabbit
+    config:
+      name: config-consumer
+#      uri: http://localhost:60000
+      discovery:
+        enabled: true
+        service-id: config-bus-server
+      profile: prod
+      label: master
+
+server:
+  port: 61002
+
+myWords: ${words}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+
+management:
+  security:
+    enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+
+
+
+
+
+

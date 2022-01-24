@@ -1,0 +1,3 @@
+ELK的启动方式，参照随堂Demo里的ELK章节
+
+具体步骤和命令，在sleuth-traceA项目下的elk_commands.txt文件

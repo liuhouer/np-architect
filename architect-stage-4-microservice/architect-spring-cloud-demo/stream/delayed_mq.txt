@@ -1,0 +1,22 @@
+1.	下载插件
+https://www.rabbitmq.com/community-plugins.html
+
+找到rabbitmq_delayed_message_exchange
+下载对应版本的插件，3.6和3.7版本插件不一样
+
+
+2. 下载以后解压，copy到rabbitmq安装目录下的plugins文件夹
+
+3.	安装插件
+rabbitmq-plugins enable rabbitmq_delayed_message_exchange
+
+4.	安装完一定要重启RabbitMQ，不是单单重启UI管理界面！
+如果只是单单调用rabbitmqctl  stop_app然后再rabbitmqctl  start_app是没有作用的！
+正确的步骤是先rabbitmqctl stop，然后再直接执行rabbitmq-server
+
+对使用Mac的同学，可以将Rabbit的安装路径放到”~/.bash_profile”文件中
+export PATH=${PATH}:$RABBIT_HOME/sbin
+
+windows的同学也可以直接加入到系统变量中
+
+如果以上步骤还能使延迟队列生效，在重启完之后，换一个新的topic名字就好了

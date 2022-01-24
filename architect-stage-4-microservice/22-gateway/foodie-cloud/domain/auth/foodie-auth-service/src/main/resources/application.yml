@@ -1,0 +1,27 @@
+server:
+  port: 10006
+
+spring:
+  application:
+    name: foodie-auth-service
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password: imooc
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:20000/eureka/
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  security:
+    enabled: false

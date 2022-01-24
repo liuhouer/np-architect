@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imooc.architect.dao.FridgeDao" >
+  <resultMap id="BaseResultMap" type="com.imooc.architect.entity.Fridge" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="ANIMAL_ID" property="animalId" jdbcType="BIGINT" />
+    <result column="DOOR_OPENED" property="doorOpened" jdbcType="BOOLEAN" />
+  </resultMap>
+
+  <update id="open">
+    UPDATE FRIDGE SET DOOR_OPENED = 1 WHERE id = #{id}
+  </update>
+
+  <update id="close">
+    UPDATE FRIDGE SET DOOR_OPENED = 0 WHERE id = #{id}
+  </update>
+
+  <!-- 门要开着，并且冰箱里没东西 -->
+  <update id="put">
+    UPDATE FRIDGE SET ANIMAL_ID = #{animalId} WHERE id = #{id} and DOOR_OPENED=1 and ANIMAL_ID is null
+  </update>
+
+  <!-- 锁住冰箱的行记录 -->
+  <update id="clear">
+    UPDATE FRIDGE SET ANIMAL_ID = null WHERE id = #{id} and DOOR_OPENED=1
+  </update>
+
+  <!-- 锁住冰箱的行记录 -->
+  <select id="lockFridge" resultMap="BaseResultMap">
+    select * from FRIDGE where id = #{id} for update
+  </select>
+
+</mapper>

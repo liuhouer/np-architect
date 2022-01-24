@@ -1,0 +1,19 @@
+profiles 多环境配置梳理：
+1. 数据源配置
+    1.1 url 根据自身情况去修改为 localhost 或者 内网IP（集群或者分布式系统，一定要使用内网IP）
+    1.2 密码 root 改为 你自己的密码
+2. mybatis 日志打印
+    dev  可以打印
+    test 可以打印
+    prod 无需打印
+3. 图片保存目录 和 图片服务请求路径配置
+    /workspaces/images/foodie/faces
+    http://api.z.mukewang.com:8088/foodie-dev-api/foodie/faces
+4. 从支付中心回调天天吃货后端服务的回调地址
+    http://api.z.mukewang.com:8088/foodie-dev-api/orders/notifyMerchantOrderPaid
+
+打包方式：
+1. jar
+    服务化的概念，后续接触springcloud，所有的服务打包都是以jar的形式存在
+2. war
+    应用程序的概念，也可以向外提供服务和接口

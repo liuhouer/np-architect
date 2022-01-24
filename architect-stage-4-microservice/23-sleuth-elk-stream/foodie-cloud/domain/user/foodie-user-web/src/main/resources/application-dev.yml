@@ -1,0 +1,121 @@
+server:
+  port: 10002
+
+spring:
+  datasource:                                           # 数据源的相关配置
+    # 拆分数据源到独立database instance，或者独立schema
+#    url: jdbc:mysql://localhost:3306/foodie-cloud-item?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+#    url: jdbc:mysql://localhost:3306/foodie-shop-dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+#    password: root
+    url: ${mariadb.url}
+    password: ${mariadb.password}
+  redis:
+    # Redis 单机单实例
+    database: 0
+    host: localhost
+    port: 6379
+    password: imooc
+
+  # 链路追踪
+  zipkin:
+    discoveryClientEnabled: true
+    base-url: http://ZIPKIN-SERVER/
+    locator:
+      discovery:
+        enabled: true
+    # 以HTTP上传数据到Zipkin
+    # WHY? bus依赖项导入了rabbitmq的依赖项，zipkin会默认使用mq
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1
+  ### 推送变更的时候用
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+    # Redis 哨兵模式
+#    database: 1
+#    password: imooc
+#    sentinel:
+#      master: imooc-master
+#      nodes: 192.168.1.191:26379,192.168.1.192:26379,192.168.1.193:26379
+    # Redis 集群模式
+#    password: imooc
+#    cluster:
+#      nodes: 192.168.1.201:6379,192.168.1.202:6379,192.168.1.203:6379,192.168.1.204:6379,192.168.1.205:6379,192.168.1.206:6379
+  ############################################################
+  # Stream配置
+  ############################################################
+  cloud:
+    stream:
+      bindings:
+        force-logout-consumer:
+          destination: force-logout-topic
+          group: force-logout-group
+          consumer:
+            max-attempts: 2
+        force-logout-producer:
+          destination: force-logout-topic
+
+
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+## 开启所有actuator-endpoint
+#management:
+#  endpoint:
+#    health:
+#      show-details: always
+#  endpoints:
+#    web:
+#      exposure:
+#        include: '*'
+#  security:
+#    enabled: false
+
+hystrix:
+  command:
+    # 有的属性是默认值，写不写都行
+    default:
+      fallback:
+        enabled: true
+      circuitBreaker:
+        enabled: true
+        # 超过50%错误，那么开启熔断
+        errorThresholdPercentage: 50
+        # 5个request之后才进行统计
+        requestVolumeThreshold: 5
+        # 10秒之后进入半开状态
+        sleepWindowInMilliseconds: 10000
+        # forceClosed, forceOpen 强制关闭/开启熔断开关
+      execution:
+        timeout:
+          enabled: true
+        # 可以指定隔离方式是线程池还是信号量
+        isolation:
+          thread:
+            interruptOnTimeout: true
+            interruptOnFutureCancel: true
+            timeoutInMilliseconds: 10000
+      metrics:
+        rollingStats:
+          # 时间窗口统计
+          timeInMilliseconds: 20000
+          # numBuckets: 10
+#        rollingPercentile:
+#          # 时间窗口统计
+#          timeInMilliseconds: 20000
+#          # numBuckets: 10
+#          bucketSize: 300
+    # 照这个方法，覆盖其他的属性
+    # loginFail是在HystrixCommand中指定的ID
+    loginFail:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 3000

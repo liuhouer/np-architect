@@ -1,0 +1,24 @@
+# 极简配置
+
+dubbo:
+  application:
+    name: dubbo-client
+  registry:
+    address: zookeeper://127.0.0.1:2181
+    # 大伙请换成自己的zookeeperip
+    protocol: zookeeper
+    # 启动时检查是否存在，注册中心不存在就报错
+    check: false
+  metadata-report:
+    address: zookeeper://127.0.0.1:2181
+  #协议配置，
+  protocol:
+    # name必填，指定协议类型
+    name: dubbo
+    #dubbo协议缺省端口为20880，rmi为1099，http和hessian为80
+  monitor:
+    #用于配置连接监控中心相关信息，可选
+    protocol: register
+
+server:
+  port: 63001

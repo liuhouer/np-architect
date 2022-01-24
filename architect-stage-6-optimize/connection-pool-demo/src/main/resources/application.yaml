@@ -1,0 +1,14 @@
+server:
+  port: 8090
+
+feign:
+  httpclient:
+    # \u8BA9Feign\u5E95\u5C42\u4F7F\u7528Apache HttpClient\u901A\u4FE1
+    enabled: true
+    # \u8BBE\u7F6Efeign\u6700\u5927\u7684\u8FDE\u63A5\u6570
+    max-connections: 200
+    # feign\u5355\u4E2A\u8DEF\u5F84\u7684\u6700\u5927\u8FDE\u63A5\u6570
+    max-connections-per-route: 50
+
+#  okhttp:
+#    enabled: true
